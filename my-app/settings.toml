@@ -5,6 +5,9 @@ DB_PASSWORD = "app_password"
 DATABASE_NAME = "app"
 
 [development]
+DB_HOST = "localhost"
+
+[docker]
 DB_HOST = "postgres"
 
 [testing]
