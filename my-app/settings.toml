@@ -8,7 +8,7 @@ DATABASE_NAME = "app"
 DB_HOST = "localhost"
 
 [docker]
-DB_HOST = "postgres"
+DB_HOST = "db"
 
 [testing]
 TESTING = true

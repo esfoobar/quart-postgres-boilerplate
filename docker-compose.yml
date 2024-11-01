@@ -16,7 +16,7 @@ services:
     environment:
       PORT: 5001
       SECRET_KEY: "you-will-never-guess"
-      ENV_FOR_DYNACONF: development
+      ENV_FOR_DYNACONF: docker 
       DB_USERNAME: app_user
       DB_PASSWORD: app_password
       DB_HOST: postgres
