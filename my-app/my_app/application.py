@@ -1,8 +1,10 @@
 from typing import Any
 
-from dynaconf import Dynaconf, settings
+from dynaconf import settings
 from quart import Quart
 
+from my_app.counter_app.views import counter_app
+from my_app.db import db_connection
 from my_app.home_app.views import home_app
 
 
@@ -22,5 +24,16 @@ async def create_app(**config_overrides: Any) -> Quart:
 
     # register blueprints
     app.register_blueprint(home_app)
+    app.register_blueprint(counter_app)
+
+    @app.before_serving
+    async def create_db_conn() -> None:
+        database = await db_connection()
+        await database.connect()
+        app.dbc = database  # type: ignore
+
+    @app.after_serving
+    async def close_db_conn() -> None:
+        await app.dbc.disconnect()  # type: ignore
 
     return app
