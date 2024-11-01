@@ -1,18 +1,17 @@
-from quart import Blueprint, current_app
+from dynaconf import settings
+from quart import Blueprint
 
-# This defines a "home_app" Blueprint for how to construct or extend the main application.
-# To learn more go to: https://flask.palletsprojects.com/en/2.2.x/blueprints/
 home_app = Blueprint("home_app", __name__)
 
 
-@home_app.route("/")
-async def home() -> str:
+@home_app.route("/app-settings")
+async def app_settings() -> str:
     """
     The home page for a home type
     """
 
     return (
         "<h3>Home: Hello World!</h3>"
-        + f"<p>Dynaconf Environment: {current_app.config.ENV_FOR_DYNACONF}</br>"  # type: ignore
-        + f"DB_HOST: {current_app.config.DB_HOST}</p>"  # type: ignore
+        + f"<p>Dynaconf Environment: {settings.ENV_FOR_DYNACONF}</br>"  # type: ignore
+        + f"DB_HOST: {settings.DB_HOST}</p>"  # type: ignore
     )
