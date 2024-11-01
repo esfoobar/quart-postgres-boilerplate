@@ -20,8 +20,11 @@ async def init() -> str:
     else:
         row = result[0]
         count = row["count"] + 1
-        counter_table.update().where(counter_table.c.id == row["id"]).values(
-            count=count
+        update_stmt = (
+            counter_table.update()
+            .where(counter_table.c.id == row["id"])
+            .values(count=count)
         )
+        await conn.execute(update_stmt)
         await conn.execute("commit")
     return "<h1>Counter: " + str(count) + "</h1>"
