@@ -1,6 +1,6 @@
 from typing import Any
 
-from dynaconf import Dynaconf, settings
+from dynaconf import settings
 from quart import Quart
 
 from my_app.home_app.views import home_app
