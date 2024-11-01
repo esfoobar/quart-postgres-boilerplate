@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "counter-app"
+name = "my-app"
 version = "0.1.0"
 description = "A Quart counter application"
 authors = ["Your Name <your.email@example.com>"]
-packages = [{include = "counter_app"}]
+packages = [{include = "my_app"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 quart = "0.18.4"
-python-dotenv = "^1.0.0"
 werkzeug = "2.3.7"
+dynaconf = "3.1.12"
 
 [tool.poetry.dev-dependencies]
 black = "^23.3.0"

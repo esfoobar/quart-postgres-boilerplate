@@ -1,19 +1,16 @@
 """
-wsgi file
+ASGI file for Hypercorn
 """
-# Set the path
-
 
 import os
 import sys
+import asyncio
 
-# Set the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# pylint: disable=wrong-import-position
-from counter_app.application import create_app
+from my_app.application import create_app
 
-app = create_app()
+app = asyncio.run(create_app())
 
 if __name__ == "__main__":
     app.run()

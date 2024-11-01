@@ -1,20 +1,22 @@
 version: "3.8"
 services:
   web:
-    build: .
+    build: 
+      context: ./my-app
+      target: development
     ports:
-      - "5000:5000"
+      - "5001:5001"
     volumes:
-      - .:/app
+      - ./my-app:/app
     links:
       - db:postgres
     container_name: app_web_1
     depends_on:
       - db
     environment:
-      PORT: 5000
+      PORT: 5001
       SECRET_KEY: "you-will-never-guess"
-      QUART_ENV: development
+      ENV_FOR_DYNACONF: development
       DB_USERNAME: app_user
       DB_PASSWORD: app_password
       DB_HOST: postgres
@@ -30,3 +32,5 @@ services:
       POSTGRES_USER: app_user
       POSTGRES_PASSWORD: app_password
       POSTGRES_DB: app
+
+

@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as base
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -36,14 +36,34 @@ COPY pyproject.toml ./
 # Generate poetry.lock and install dependencies
 RUN poetry lock && poetry install --no-root
 
+FROM base as development
+# Install development tools
+RUN apt-get update && apt-get install -y \
+    vim \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the rest of the application
-COPY counter_app counter_app/
+COPY my_app my_app/
 
 # Install the root package
 RUN poetry install
 
-# Listen to port 5000 at runtime
-EXPOSE 5000
+# Listen to port 5001 at runtime
+EXPOSE 5001
 
 # Define our command to be run when launching the container
-CMD poetry run gunicorn counter_app.wsgi:app -b 0.0.0.0:5001  --reload
+CMD poetry run hypercorn my_app.asgi:app -b 0.0.0.0:5001 --reload
+
+FROM base as production
+# Copy the rest of the application
+COPY my_app my_app/
+
+# Install the root package
+RUN poetry install
+
+# Listen to port 5001 at runtime
+EXPOSE 5001
+
+# Define our command to be run when launching the container
+CMD poetry run hypercorn my_app.asgi:app -b 0.0.0.0:5001 --reload

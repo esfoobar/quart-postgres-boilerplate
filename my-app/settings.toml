@@ -1,0 +1,18 @@
+[default]
+SECRET_KEY = "you-will-never-guess"
+DB_USERNAME = "app_user"
+DB_PASSWORD = "app_password"
+DATABASE_NAME = "app"
+
+[development]
+DB_HOST = "postgres"
+
+[testing]
+TESTING = true
+DB_HOST = "testing-db"
+
+[staging]
+DB_HOST = "staging-db"
+
+[production]
+DB_HOST = "production-db"
