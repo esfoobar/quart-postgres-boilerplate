@@ -50,8 +50,8 @@ async def create_db() -> AsyncGenerator[dict, Never]:
 @pytest.fixture(scope="function")
 async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, None]:
     app = await create_app(**create_db)
-    app_context = app.apap_context()
-    app_context.push()
+    app_context = app.app_context()
+    await app_context.push()
 
     # Create engine and create all tables
     engine = create_engine(create_db["DB_TEST_URI"])

@@ -1,5 +1,5 @@
 import pytest
-from quart import current_app
+from quart import Quart, current_app
 
 from my_app.counter_app.models import counter_table
 
