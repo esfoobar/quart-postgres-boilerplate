@@ -16,6 +16,7 @@ sqlalchemy = "^2.0.36"
 alembic = "^1.13.3"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
+sqlalchemy-utils = "^0.41.2"
 
 [tool.poetry.dev-dependencies]
 black = "^23.3.0"
@@ -36,3 +37,10 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 config_file = "mypy.ini"
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v -s"

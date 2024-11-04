@@ -1,76 +1,71 @@
-from typing import Any, AsyncGenerator
+from typing import AsyncGenerator
 
 import pytest
 from dynaconf import settings
 from quart import Quart
 from sqlalchemy import create_engine
+from sqlalchemy_utils import create_database, database_exists, drop_database
+from typing_extensions import Never
 
 from my_app.application import create_app
 from my_app.db import metadata
 
 
-@pytest.fixture
-async def create_db() -> Any:
+@pytest.fixture(scope="function")
+async def create_db() -> AsyncGenerator[dict, Never]:
+
+    if settings.ENV_FOR_DYNACONF == "DEVELOPMENT":
+        settings.configure(FORCE_ENV_FOR_DYNACONF="TESTING")
+
     print("Creating db")
-    db_name = settings["DATABASE_NAME"]
+    db_name = settings["DATABASE_NAME"] + "_test"
     db_host = settings["DB_HOST"]
     db_username = settings["DB_USERNAME"]
     db_password = settings["DB_PASSWORD"]
 
-    db_uri = "postgresql://%s:%s@%s:5432/" % (
+    db_test_uri = "postgresql://%s:%s@%s:5432/%s" % (
         db_username,
         db_password,
         db_host,
+        db_name,
     )
 
-    engine = create_engine(db_uri + db_name)
-    conn = engine.connect()
+    # drop the database if it exists
+    if database_exists(db_test_uri):
+        drop_database(db_test_uri)
 
-    db_test_name = settings["DATABASE_NAME"] + "_test"
-
-    # drop database if exists from previous run
-    try:
-        conn.execute("COMMIT")
-        conn.execute(f"DROP DATABASE {db_test_name} WITH (FORCE)")
-    except:
-        pass
-
-    conn.execute("COMMIT")
-    conn.execute("CREATE DATABASE " + db_test_name)
-    conn.close()
-
-    print("Creating test tables")
-    engine = create_engine(db_uri + db_test_name)
-    metadata.bind = engine
-    metadata.create_all()
+    # create test database
+    create_database(db_test_uri)
 
     yield {
-        "DB_USERNAME": db_username,
-        "DB_PASSWORD": db_password,
-        "DB_HOST": db_host,
-        "DATABASE_NAME": db_test_name,
-        "DB_URI": db_uri + db_test_name,
-        "TESTING": True,
+        "DB_TEST_URI": db_test_uri,
     }
 
     print("Destroying db")
-    engine = create_engine(db_uri + db_name)
-    conn = engine.connect()
 
-    conn.execute("COMMIT")
-    conn.execute(f"DROP DATABASE {db_test_name} WITH (FORCE)")
-    conn.close()
+    # create new engine to drop test database
+    drop_database(db_test_uri)
 
 
-@pytest.fixture
-async def create_test_app(create_db) -> Any:
-    app = create_app(**create_db)
-    await app.startup()
+@pytest.fixture(scope="function")
+async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, None]:
+    app = await create_app(**create_db)
+    app_context = app.apap_context()
+    app_context.push()
+
+    # Create engine and create all tables
+    engine = create_engine(create_db["DB_TEST_URI"])
+    metadata.create_all(engine)
+
     yield app
-    await app.shutdown()
+
+    # Clean up
+    metadata.drop_all(engine)
+    await app_context.pop()
 
 
-@pytest.fixture
-def create_test_client(create_test_app) -> Any:
+@pytest.fixture(scope="function")
+async def create_test_client(create_test_app: Quart) -> AsyncGenerator:
     print("Creating test client")
-    return create_test_app.test_client()
+    async with create_test_app.test_client() as client:
+        yield client
