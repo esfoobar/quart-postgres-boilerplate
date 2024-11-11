@@ -15,16 +15,11 @@ from my_app.logger import get_logger
 logger = get_logger(__name__)
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 async def create_db() -> AsyncGenerator[dict, Never]:
 
     if settings.ENV_FOR_DYNACONF == "DEVELOPMENT":
         settings.configure(FORCE_ENV_FOR_DYNACONF="TESTING")
-
-    # db_name = settings["DATABASE_NAME"] + "_test"
-    # db_host = settings["DB_HOST"]
-    # db_username = settings["DB_USERNAME"]
-    # db_password = settings["DB_PASSWORD"]
 
     db_test_uri = "postgresql://%s:%s@%s:5432/%s" % (
         settings["DB_USERNAME"],
@@ -56,8 +51,9 @@ async def create_db() -> AsyncGenerator[dict, Never]:
     drop_database(db_test_uri)
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, None]:
+    logger.info("Setting up test app")
     app = await create_app()
     app_context = app.app_context()
     await app_context.push()
@@ -71,6 +67,8 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
 
     yield app
 
+    logger.info("Tearing down test app")
+
     # Stop the database connection
     await app.shutdown()
 
@@ -79,7 +77,7 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
     await app_context.pop()
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def create_test_client(create_test_app: Quart) -> TestClientProtocol:
     logger.info("Creating test client")
     return create_test_app.test_client()
