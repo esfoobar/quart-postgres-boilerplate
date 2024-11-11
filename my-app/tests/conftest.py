@@ -54,8 +54,6 @@ async def create_db() -> AsyncGenerator[dict, Never]:
 async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, None]:
     logger.info("Setting up test app")
     app = await create_app()
-    app_context = app.app_context()
-    await app_context.push()
 
     # Create engine and create all tables
     engine = create_engine(create_db["DB_TEST_URI"])
@@ -73,7 +71,6 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
 
     # Clean up
     metadata.drop_all(engine)
-    await app_context.pop()
 
 
 @pytest.fixture(scope="function")
