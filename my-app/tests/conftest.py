@@ -2,21 +2,21 @@ from typing import AsyncGenerator
 
 import pytest
 from dynaconf import settings
-from my_app.application import create_app
-from my_app.db import metadata
-from my_app.logger import get_logger
 from quart import Quart
 from quart.typing import TestClientProtocol
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists, drop_database
 from typing_extensions import Never
 
+from my_app.application import create_app
+from my_app.db import metadata
+from my_app.logger import get_logger
+
 logger = get_logger(__name__)
 
 
 @pytest.fixture(scope="function")
 async def create_db() -> AsyncGenerator[dict, Never]:
-
     if settings.ENV_FOR_DYNACONF == "DEVELOPMENT":
         settings.configure(FORCE_ENV_FOR_DYNACONF="TESTING")
 
@@ -27,7 +27,7 @@ async def create_db() -> AsyncGenerator[dict, Never]:
         settings["DATABASE_NAME"],
     )
 
-    # Log the key application configuration like database connection, env_for_dynaconf
+    # Log the key application configuration like database connection
     logger.info(f"Testing Environment: {settings['ENV_FOR_DYNACONF']}")
     logger.info(f"Testing Database URI: {db_test_uri}")
 
