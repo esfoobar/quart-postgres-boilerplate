@@ -17,7 +17,6 @@ logger = get_logger(__name__)
 
 @pytest.fixture(scope="function")
 async def create_db() -> AsyncGenerator[dict, Never]:
-
     if settings.ENV_FOR_DYNACONF == "DEVELOPMENT":
         settings.configure(FORCE_ENV_FOR_DYNACONF="TESTING")
 
@@ -28,7 +27,7 @@ async def create_db() -> AsyncGenerator[dict, Never]:
         settings["DATABASE_NAME"],
     )
 
-    # Log the key application configuration like database connection, env_for_dynaconf
+    # Log the key application configuration like database connection
     logger.info(f"Testing Environment: {settings['ENV_FOR_DYNACONF']}")
     logger.info(f"Testing Database URI: {db_test_uri}")
 
@@ -55,8 +54,6 @@ async def create_db() -> AsyncGenerator[dict, Never]:
 async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, None]:
     logger.info("Setting up test app")
     app = await create_app()
-    app_context = app.app_context()
-    await app_context.push()
 
     # Create engine and create all tables
     engine = create_engine(create_db["DB_TEST_URI"])
@@ -74,7 +71,6 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
 
     # Clean up
     metadata.drop_all(engine)
-    await app_context.pop()
 
 
 @pytest.fixture(scope="function")
