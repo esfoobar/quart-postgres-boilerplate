@@ -10,47 +10,55 @@ from typing_extensions import Never
 
 from my_app.application import create_app
 from my_app.db import metadata
+from my_app.logger import get_logger
+
+logger = get_logger(__name__)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 async def create_db() -> AsyncGenerator[dict, Never]:
 
     if settings.ENV_FOR_DYNACONF == "DEVELOPMENT":
         settings.configure(FORCE_ENV_FOR_DYNACONF="TESTING")
 
-    print("Creating db")
-    db_name = settings["DATABASE_NAME"] + "_test"
-    db_host = settings["DB_HOST"]
-    db_username = settings["DB_USERNAME"]
-    db_password = settings["DB_PASSWORD"]
+    # db_name = settings["DATABASE_NAME"] + "_test"
+    # db_host = settings["DB_HOST"]
+    # db_username = settings["DB_USERNAME"]
+    # db_password = settings["DB_PASSWORD"]
 
     db_test_uri = "postgresql://%s:%s@%s:5432/%s" % (
-        db_username,
-        db_password,
-        db_host,
-        db_name,
+        settings["DB_USERNAME"],
+        settings["DB_PASSWORD"],
+        settings["DB_HOST"],
+        settings["DATABASE_NAME"],
     )
+
+    # Log the key application configuration like database connection, env_for_dynaconf
+    logger.info(f"Testing Environment: {settings['ENV_FOR_DYNACONF']}")
+    logger.info(f"Testing Database URI: {db_test_uri}")
 
     # drop the database if it exists
     if database_exists(db_test_uri):
+        logger.info(f"Dropping Database URI: {db_test_uri}")
         drop_database(db_test_uri)
 
     # create test database
+    logger.info(f"Creating Database URI: {db_test_uri}")
     create_database(db_test_uri)
 
     yield {
         "DB_TEST_URI": db_test_uri,
     }
 
-    print("Destroying db")
+    logger.info(f"Dropping Testing Database URI: {db_test_uri}")
 
     # create new engine to drop test database
     drop_database(db_test_uri)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, None]:
-    app = await create_app(**create_db)
+    app = await create_app()
     app_context = app.app_context()
     await app_context.push()
 
@@ -71,7 +79,7 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
     await app_context.pop()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def create_test_client(create_test_app: Quart) -> TestClientProtocol:
-    print("Creating test client")
+    logger.info("Creating test client")
     return create_test_app.test_client()

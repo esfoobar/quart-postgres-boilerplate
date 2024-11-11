@@ -13,6 +13,7 @@ DB_HOST = "db"
 [testing]
 TESTING = true
 DB_HOST = "localhost"
+DATABASE_NAME = "app_test"
 
 [staging]
 DB_HOST = "staging-db"
