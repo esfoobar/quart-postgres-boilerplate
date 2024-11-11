@@ -3,6 +3,7 @@ from typing import AsyncGenerator
 import pytest
 from dynaconf import settings
 from quart import Quart
+from quart.typing import TestClientProtocol
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, database_exists, drop_database
 from typing_extensions import Never
@@ -57,7 +58,13 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
     engine = create_engine(create_db["DB_TEST_URI"])
     metadata.create_all(engine)
 
+    # Start the dabaase connection
+    await app.startup()
+
     yield app
+
+    # Stop the database connection
+    await app.shutdown()
 
     # Clean up
     metadata.drop_all(engine)
@@ -65,7 +72,6 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
 
 
 @pytest.fixture(scope="function")
-async def create_test_client(create_test_app: Quart) -> AsyncGenerator:
+def create_test_client(create_test_app: Quart) -> TestClientProtocol:
     print("Creating test client")
-    async with create_test_app.test_client() as client:
-        yield client
+    return create_test_app.test_client()
