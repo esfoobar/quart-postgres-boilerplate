@@ -9,13 +9,3 @@ DB_HOST = "localhost"
 
 [docker]
 DB_HOST = "db"
-
-[testing]
-TESTING = true
-DB_HOST = "testing-db"
-
-[staging]
-DB_HOST = "staging-db"
-
-[production]
-DB_HOST = "production-db"
