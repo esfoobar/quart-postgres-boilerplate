@@ -2,12 +2,12 @@ version: "3.8"
 services:
   web:
     build: 
-      context: ./my-app
+      context: ./backend-service
       target: development
     ports:
       - "5001:5001"
     volumes:
-      - ./my-app:/app
+      - ./backend-service:/app
     links:
       - db:postgres
     container_name: app_web_1
