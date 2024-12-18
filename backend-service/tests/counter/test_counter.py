@@ -1,12 +1,11 @@
 import pytest
-from quart import Quart, current_app
-from quart.typing import TestClientProtocol
-
 from my_app.counter_app.models import counter_table
+from quart import Quart, current_app
+from quart.testing import QuartClient
 
 
 @pytest.mark.asyncio
-async def test_initial_response(create_test_client: TestClientProtocol) -> None:
+async def test_initial_response(create_test_client: QuartClient) -> None:
     response = await create_test_client.get("/")
     body = await response.get_data()
     assert "Counter: 1" in str(body)
@@ -14,7 +13,8 @@ async def test_initial_response(create_test_client: TestClientProtocol) -> None:
 
 @pytest.mark.asyncio
 async def test_second_response(
-    create_test_client: TestClientProtocol, create_test_app: Quart
+    create_test_client: QuartClient,
+    create_test_app: Quart,
 ) -> None:
     # Counter 1
     response = await create_test_client.get("/")
