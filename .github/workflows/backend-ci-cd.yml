@@ -1,4 +1,4 @@
-name: My App CI/CD Pipeline
+name: Backend Service CI/CD Pipeline
 on:
   pull_request:
     branches:
