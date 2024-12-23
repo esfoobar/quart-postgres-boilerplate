@@ -5,3 +5,4 @@
 *#
 .metadata
 .mypy_cache
+__pycache__
