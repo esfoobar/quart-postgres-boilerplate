@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   web:
-    build: 
+    build:
       context: ./backend-service
       target: development
     ports:
@@ -16,7 +16,7 @@ services:
     environment:
       PORT: 5001
       SECRET_KEY: "you-will-never-guess"
-      ENV_FOR_DYNACONF: docker 
+      ENV_FOR_DYNACONF: docker
       DB_USERNAME: app_user
       DB_PASSWORD: app_password
       DB_HOST: postgres
@@ -42,5 +42,3 @@ services:
       POSTGRES_USER: app_user
       POSTGRES_PASSWORD: app_password
       POSTGRES_DB: app
-
-

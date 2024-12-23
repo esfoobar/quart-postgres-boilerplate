@@ -1,0 +1,35 @@
+{
+    "name": "My Dev Container",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "web",
+    "runServices": [
+        "db",
+        "web"
+    ],
+    "workspaceFolder": "/app",
+    "overrideCommand": false,
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.analysis.typeCheckingMode": "basic",
+                "python.linting.mypyEnabled": true,
+                "python.linting.mypyPath": "mypy",
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": true
+                    }
+                }
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-python.isort",
+                "matangover.mypy"
+            ]
+        }
+    },
+    "postCreateCommand": "poetry install",
+    "remoteUser": "root"
+}
