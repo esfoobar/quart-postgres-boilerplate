@@ -13,13 +13,12 @@
           "QUART_APP": "${workspaceRoot}/my_app/manage.py",
           "QUART_DEBUG": "1",
         },
-        "envFile": "${workspaceFolder}/my_app/.quartenv",                
         "args": [
           "run",
           "--host",
           "0.0.0.0",
           "--port",
-          "5001"
+          "5002"
         ],
         "jinja": true
       }
