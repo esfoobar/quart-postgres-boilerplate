@@ -12,7 +12,6 @@
         "env": {
           "QUART_APP": "${workspaceRoot}/my_app/manage.py",
           "QUART_DEBUG": "1",
-          "ENV_FOR_DYNACONF": "development"
         },
         "envFile": "${workspaceFolder}/my_app/.quartenv",                
         "args": [
