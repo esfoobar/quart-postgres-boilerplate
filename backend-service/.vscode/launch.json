@@ -13,7 +13,6 @@
         "QUART_APP": "${workspaceRoot}/my_app/manage.py",
         "QUART_DEBUG": "1"
       },
-      "envFile": "${workspaceFolder}/my_app/.quartenv",
       "args": [
         "run",
         "--host",
