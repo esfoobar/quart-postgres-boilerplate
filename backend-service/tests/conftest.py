@@ -14,7 +14,7 @@ from typing_extensions import Never
 logger = get_logger(__name__)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 async def create_db() -> AsyncGenerator[dict, Never]:
     if settings.ENV_FOR_DYNACONF == "DEVELOPMENT":
         settings.configure(FORCE_ENV_FOR_DYNACONF="TESTING")
@@ -51,7 +51,7 @@ async def create_db() -> AsyncGenerator[dict, Never]:
     drop_database(db_test_uri)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, None]:
     logger.info("Setting up test app")
     app = await create_app()
@@ -74,7 +74,7 @@ async def create_test_app(create_db: dict[str, str]) -> AsyncGenerator[Quart, No
     metadata.drop_all(engine)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def create_test_client(create_test_app: Quart) -> TestClientProtocol:
     logger.info("Creating test client")
     return create_test_app.test_client()
