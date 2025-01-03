@@ -17,7 +17,7 @@
                 "ms-python.python",
                 "ms-python.black-formatter",
                 "ms-python.isort",
-                "matangover.mypy"
+                "ms-python.mypy-type-checker"
             ]
         }
     },
