@@ -15,7 +15,7 @@ from my_app.logger import get_logger
 logger = get_logger(__name__)
 
 
-@pytest.fixture                  
+@pytest.fixture
 async def create_db() -> AsyncGenerator[dict, Never]:
     if settings.ENV_FOR_DYNACONF == "DEVELOPMENT":
         settings.configure(FORCE_ENV_FOR_DYNACONF="TESTING")

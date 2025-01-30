@@ -8,7 +8,7 @@
     ],
     "workspaceFolder": "/app",
     "overrideCommand": true,
-    "postStartCommand": "tail -f /dev/null",
+    "postStartCommand": "bash",
     "remoteEnv": {
         "ENV_FOR_DYNACONF": "DEVCONTAINER"
     },
