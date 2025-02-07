@@ -24,9 +24,6 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 # Add poetry to PATH
 ENV PATH="/root/.local/bin:$PATH"
 
-# Configure poetry
-RUN poetry config virtualenvs.create false
-
 # set working directory
 WORKDIR /app
 
@@ -37,6 +34,9 @@ COPY pyproject.toml ./
 RUN poetry lock && poetry install --no-root
 
 FROM base as development
+# Create virtualenv inside the project
+RUN poetry config virtualenvs.in-project true
+
 # Install development tools
 RUN apt-get update && apt-get install -y \
     vim \
@@ -52,10 +52,13 @@ RUN poetry install
 # Listen to port 5001 at runtime
 EXPOSE 5001
 
-# Define our command to be run when launching the container
+# Define a tail command for the development container
 CMD poetry run hypercorn my_app.asgi:app -b 0.0.0.0:5001 --reload
 
 FROM base as production
+# Disable virtualenv creation
+RUN poetry config virtualenvs.create false
+
 # Copy the rest of the application
 COPY my_app my_app/
 
